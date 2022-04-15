@@ -1,3 +1,4 @@
 # conwaysGame
 
-P5.JS
+Conway's Game of Life
+built on P5.js
