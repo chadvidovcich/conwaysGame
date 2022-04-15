@@ -1,4 +1,44 @@
-function make2DArray(col,row){
+let gridCells;
+const fps = 10
+const cellDiam = 8
+let stagnantCounter = 0
+let stagnantCellsMemory = 0
+let cellColorRGB = [0,239,172]
+
+class Cell {
+  constructor(x,y) {
+    this.isAlive = true
+    this.nextState = true
+    this.prevState = true
+    this.prev2State = true
+    this.xLoc = x
+    this.yLoc = y
+    this.color = cellColorRGB
+  }
+
+  drawCell(x,y){
+    fill(this.color[0],this.color[1],this.color[2])
+    stroke(0)
+    circle(x+cellDiam/2,y+cellDiam/2,cellDiam-1.2)
+  }
+
+  randomIsAlive(){
+    this.isAlive = Boolean(Math.floor(Math.random()*2))
+  }
+
+  age(){
+    this.color = this.color.map((val,ind)=>{
+      let minDark = 0.5
+      let darkRate = 0.02
+      if (val < minDark * cellColorRGB[ind]) {
+        return minDark * cellColorRGB[ind]
+      } else {return val* (1-darkRate)}
+    })
+  }
+
+}
+
+function makeEmpty2DArray(col,row){
   let arr = new Array(col)
  for (let i = 0; i < arr.length; i++) {
   arr[i] = new Array(row)
@@ -6,41 +46,124 @@ function make2DArray(col,row){
   return arr
 }
 
-function randomizeGrid(grid){
-  for (let i = 0; i < grid.length; i++) {
-    for (let j = 0; j < grid[0].length; j++) {
-      grid[i][j] = Math.floor(Math.random()*2)
+function fillArrWthRandCells(arr){
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = 0; j < arr[0].length; j++) {
+      arr[i][j] = new Cell(i,j)
+      arr[i][j].randomIsAlive()
     } 
   }
 }
 
-let grid;
-const canvasWidth = 200
-const canvasHeight = 200
-const resolution = 10
-const fps = 2
-
-function setup() {
-  createCanvas(canvasWidth,canvasHeight)
-  frameRate(fps)
-  grid = make2DArray(Math.floor(canvasWidth/resolution),Math.floor(canvasHeight/resolution))
-  randomizeGrid(grid)
+function drawGrid(gridCells) {
+  for (let i = 0; i < gridCells.length; i++) {
+    for (let j = 0; j < gridCells[0].length; j++) {
+      if (gridCells[i][j].isAlive == true) {
+        let x = i * cellDiam
+        let y = j * cellDiam
+        gridCells[i][j].drawCell(x,y)
+      }
+    }
+  }
 }
 
-function draw() {
-  randomizeGrid(grid)
-  background(50)
-  for (let i = 0; i < canvasWidth/resolution; i++) {
-    for (let j = 0; j < canvasHeight/resolution; j++) {
-      let x = i * resolution
-      let y = j * resolution
-      if (grid[i][j] == 1) {
-        fill(0, 239, 172)
-        stroke(0)
-        circle(x+resolution/2,y+resolution/2,resolution-1,resolution-1)
-        // rect(x,y,resolution,resolution)
+function nextGrid(gridCells) {
+
+  //counts live neighbors of cell
+  function countNeighbs(cell,gridCells) {
+    let count = 0
+    for (let i = -1; i < 2; i++){
+      for (let j = -1; j < 2; j++){
+        count += gridCells[cell.xLoc+i][cell.yLoc+j].isAlive
+      }
+    }
+    count -= gridCells[cell.xLoc][cell.yLoc].isAlive
+    return count
+  }
+
+
+
+//conways rules
+  let cell
+  let liveCells = 0, deadCells = 0, stagnantCells = 0
+
+  for (let i = 0; i < gridCells.length; i++) {
+    for (let j = 0; j < gridCells[0].length; j++) {
+      cell = gridCells[i][j]
+      cell.isAlive ? liveCells++ : deadCells++
+
+      if (i == 0 || i == gridCells.length - 1 || j == 0 || j == gridCells[0].length - 1) {
+        cell.nextState = false
+      }
+      else if (cell.isAlive) {
+        if (countNeighbs(cell,gridCells) < 2) {
+          cell.nextState = false
+        }
+        else if (countNeighbs(cell,gridCells) == 2 || countNeighbs(cell,gridCells) == 3) {
+          cell.nextState = true
+          cell.age()
+      }
+        else if (countNeighbs(cell,gridCells) > 3) {
+          cell.nextState = false
+        }
+      }
+      else if (!cell.isAlive && countNeighbs(cell,gridCells) == 3) {
+        cell.color = cellColorRGB
+        cell.nextState = true
+      }
+      else {
+        cell.nextState = false
+      }
+      if (cell.prevState == cell.nextState || cell.isAlive == cell.nextState || cell.prev2State == cell.nextState) {
+        stagnantCells++
       }
     }
   }
 
+  if (stagnantCells == stagnantCellsMemory) {
+    stagnantCounter++
+  }
+  else {
+    stagnantCellsMemory = stagnantCells
+  }
+  
+  //state machine
+  for (let i = 0; i < gridCells.length; i++) {
+    for (let j = 0; j < gridCells[0].length; j++) {
+      cell = gridCells[i][j]
+      cell.prev2State = cell.prevState
+      cell.prevState = cell.isAlive
+      cell.isAlive = cell.nextState
+    }
+  }
+
+  if (stagnantCounter > 3 * fps) {
+    setup()
+  }
+}
+
+
+
+function setup() {
+  const calcArrWidth = windowWidth/cellDiam
+  const calcArrHeight = (windowHeight-5)/cellDiam
+  stagnantCounter = 0
+  stagnantCellsMemory = 0
+
+  createCanvas(windowWidth,windowHeight-5)
+  frameRate(fps)
+  gridCells = makeEmpty2DArray(Math.floor(calcArrWidth),Math.floor(calcArrHeight))
+  fillArrWthRandCells(gridCells)
+  background(50)
+}
+
+function draw() {
+  background(50)
+  nextGrid(gridCells)
+  drawGrid(gridCells)
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth,windowHeight);
+  setup()
 }
