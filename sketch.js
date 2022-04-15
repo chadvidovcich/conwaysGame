@@ -1,6 +1,6 @@
 let gridCells;
-const fps = 10
-const cellDiam = 8
+const fps = 6
+const cellDiam = 10
 let stagnantCounter = 0
 let stagnantCellsMemory = 0
 let cellColorRGB = [0,239,172]
@@ -154,11 +154,10 @@ function setup() {
   frameRate(fps)
   gridCells = makeEmpty2DArray(Math.floor(calcArrWidth),Math.floor(calcArrHeight))
   fillArrWthRandCells(gridCells)
-  background(50)
 }
 
 function draw() {
-  background(50)
+  background(30)
   nextGrid(gridCells)
   drawGrid(gridCells)
 }
