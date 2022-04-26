@@ -1,6 +1,7 @@
 let gridCells;
 const fps = 6
 const cellDiam = 6
+const startingDensity = 12 //5-100
 let stagnantCounter = 0
 let stagnantCellsMemory = 0
 const cellColorStart = [55,220,110]
@@ -23,7 +24,7 @@ class Cell {
   }
 
   randomIsAlive(){
-    this.isAlive = Boolean(Math.floor(Math.random()*2))
+    this.isAlive = Boolean(Math.floor((Math.random() * (startingDensity/100+1))))
   }
 
   age(){
