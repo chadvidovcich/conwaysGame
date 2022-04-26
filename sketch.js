@@ -1,6 +1,6 @@
 let gridCells;
-const fps = 7
-const cellDiam = 7
+const fps = 6
+const cellDiam = 6
 let stagnantCounter = 0
 let stagnantCellsMemory = 0
 const cellColorStart = [55,220,110]
