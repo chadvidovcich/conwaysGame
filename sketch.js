@@ -1,9 +1,9 @@
 let gridCells;
-const fps = 10
-const cellDiam = 8
+const fps = 7
+const cellDiam = 7
 let stagnantCounter = 0
 let stagnantCellsMemory = 0
-let cellColorRGB = [0,239,172]
+const cellColorStart = [55,220,110]
 
 class Cell {
   constructor(x,y) {
@@ -13,7 +13,7 @@ class Cell {
     this.prev2State = true
     this.xLoc = x
     this.yLoc = y
-    this.color = cellColorRGB
+    this.color = cellColorStart
   }
 
   drawCell(x,y){
@@ -28,11 +28,11 @@ class Cell {
 
   age(){
     this.color = this.color.map((val,ind)=>{
-      let minDark = 0.5
+      let minDark = 0.3
       let darkRate = 0.02
-      if (val < minDark * cellColorRGB[ind]) {
-        return minDark * cellColorRGB[ind]
-      } else {return val* (1-darkRate)}
+      if (val < minDark * cellColorStart[ind]) {
+        return minDark * cellColorStart[ind]
+      } else {return val * (1-darkRate)}
     })
   }
 
@@ -108,7 +108,7 @@ function nextGrid(gridCells) {
         }
       }
       else if (!cell.isAlive && countNeighbs(cell,gridCells) == 3) {
-        cell.color = cellColorRGB
+        cell.color = cellColorStart
         cell.nextState = true
       }
       else {
