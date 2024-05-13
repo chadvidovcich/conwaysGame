@@ -1,8 +1,12 @@
 # conwaysGame
 
 Conway's Game of Life
-built on P5.js
+
+A P5.js simulation of a cellular automaton devised by the British mathematician John Horton Conway in 1970.
+
+Stack: JS, P5.js
 
 ## Usage
+
 View the live deployment
-[Here](https://quickgameoflife.netlify.app/)
+[Here](https://gameoflife.chadvidovcich.com/)
