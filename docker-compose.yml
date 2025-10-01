@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: conwaysgame:latest
+    pull_policy: never
     restart: unless-stopped
     ports:
       - 2221:80
