@@ -9,4 +9,4 @@ Stack: JS, P5.js
 ## Usage
 
 View the live deployment
-[Here](https://gameoflife.chadvidovcich.com/)
+[Here](https://conways-game.chadvidovcich.com/)
