@@ -1,5 +1,5 @@
 services:
-  hot-dog:
+  web:
     build:
       context: .
       dockerfile: Dockerfile
