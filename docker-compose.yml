@@ -1,5 +1,6 @@
 services:
   conwaysgame:
+    container_name: project-conways-game-app
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,5 +14,3 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
-    labels:
-      - "com.centurylinklabs.watchtower.enable=true"
